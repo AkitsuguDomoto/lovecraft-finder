@@ -2,14 +2,6 @@
 
 このリポジトリには、質問回答からラブクラフト作品を推薦する診断ツールが入っています。
 
-## ファイル
-
-- `lovecraft-diagnosis-widget.html`
-  - ローカル確認用の完全HTML（`<!doctype html>`付き）
-- `squarespace-embed-snippet.html`
-  - Squarespaceコードブロックにそのまま貼る想定の埋め込みスニペット
-  - 診断結果に購入URLボタンを表示
-  - 出力は「本命3 / 次点2 / 冒険枠1（条件次第）」
 
 ## 実装の要点
 
