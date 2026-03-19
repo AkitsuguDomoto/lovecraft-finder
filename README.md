@@ -1,4 +1,4 @@
-# Lovecraft Finder (Squarespace埋め込み用)
+# Lovecraft Finder
 
 このリポジトリには、質問回答からラブクラフト作品を推薦する診断ツールが入っています。
 
