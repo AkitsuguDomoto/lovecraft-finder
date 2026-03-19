@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ラブクラフト診断レコメンド</title>
+  <style>
+    #lf-widget-root {
+      --bg-1: #061419;
+      --bg-2: #10242d;
+      --panel: rgba(243, 234, 214, 0.92);
+      --panel-strong: #f0e8d6;
+      --ink: #1f2224;
+      --muted: #4d5456;
+      --accent: #b8462f;
+      --accent-2: #0d7f7b;
+      --line: #d7cbb2;
+      --shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(13, 127, 123, 0.25), transparent 36%),
+        radial-gradient(circle at 85% 80%, rgba(184, 70, 47, 0.20), transparent 34%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      line-height: 1.7;
+      padding: 24px;
+    }
+
+    #lf-widget-root,
+    #lf-widget-root * {
+      box-sizing: border-box;
+    }
+
+    #lf-widget-root .app {
+      max-width: 980px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid rgba(239, 227, 201, 0.8);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: rise 0.8s ease;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #lf-widget-root .lfw-header {
+      padding: 28px 24px 18px;
+      background:
+        linear-gradient(120deg, rgba(6, 20, 25, 0.92), rgba(16, 36, 45, 0.92));
+      color: #f4ecda;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      position: static !important;
+      inset: auto !important;
+      transform: none !important;
+      z-index: auto !important;
+      display: block !important;
+    }
+
+    #lf-widget-root .lfw-header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.55rem, 1.05rem + 2vw, 2.2rem);
+      letter-spacing: 0.03em;
+      font-weight: 700;
+    }
+
+    #lf-widget-root .lfw-header p {
+      margin: 0;
+      color: rgba(244, 236, 218, 0.92);
+      font-size: 0.98rem;
+    }
+
+    #lf-widget-root .lfw-content {
+      padding: 22px;
+      position: static !important;
+      margin-top: 0 !important;
+      display: block !important;
+    }
+
+    #lf-widget-root .question {
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.55);
+      transform: translateY(6px);
+      opacity: 0;
+      animation: staggerIn 0.55s ease forwards;
+    }
+
+    #lf-widget-root .question:nth-child(1) { animation-delay: 0.03s; }
+    #lf-widget-root .question:nth-child(2) { animation-delay: 0.05s; }
+    #lf-widget-root .question:nth-child(3) { animation-delay: 0.07s; }
+    #lf-widget-root .question:nth-child(4) { animation-delay: 0.09s; }
+    #lf-widget-root .question:nth-child(5) { animation-delay: 0.11s; }
+    #lf-widget-root .question:nth-child(6) { animation-delay: 0.13s; }
+    #lf-widget-root .question:nth-child(7) { animation-delay: 0.15s; }
+    #lf-widget-root .question:nth-child(8) { animation-delay: 0.17s; }
+    #lf-widget-root .question:nth-child(9) { animation-delay: 0.19s; }
+    #lf-widget-root .question:nth-child(10) { animation-delay: 0.21s; }
+    #lf-widget-root .question:nth-child(11) { animation-delay: 0.23s; }
+    #lf-widget-root .question:nth-child(12) { animation-delay: 0.25s; }
+
+    @keyframes staggerIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #lf-widget-root .q-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    #lf-widget-root .options {
+      display: grid;
+      gap: 8px;
+    }
+
+    #lf-widget-root .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.96rem;
+    }
+
+    #lf-widget-root .option input {
+      margin-top: 0.25em;
+      accent-color: var(--accent-2);
+    }
+
+    #lf-widget-root .optional {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px dashed #b89f78;
+      background: rgba(243, 236, 223, 0.7);
+    }
+
+    #lf-widget-root .optional h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    #lf-widget-root textarea {
+      width: 100%;
+      min-height: 86px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #c4b08a;
+      font: inherit;
+      background: #fff;
+    }
+
+    #lf-widget-root .select-wrap {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    #lf-widget-root select {
+      max-width: 420px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #c4b08a;
+      font: inherit;
+      background: #fff;
+    }
+
+    #lf-widget-root .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #lf-widget-root .button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.16s ease, opacity 0.16s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lf-widget-root .button:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    #lf-widget-root .button.primary {
+      background: linear-gradient(120deg, #b8462f, #c55f3f);
+      color: #fff;
+    }
+
+    #lf-widget-root .button.secondary {
+      background: #ece2cd;
+      color: #2d2f31;
+      border: 1px solid #cfbe9f;
+    }
+
+    #lf-widget-root .error {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #dc8a79;
+      background: #fbe2db;
+      color: #7a2516;
+      display: none;
+      font-size: 0.95rem;
+    }
+
+    #lf-widget-root .results {
+      margin-top: 26px;
+      display: none;
+      animation: rise 0.65s ease;
+    }
+
+    #lf-widget-root .results h2 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    #lf-widget-root .results p.lead {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    #lf-widget-root .section {
+      margin-top: 16px;
+    }
+
+    #lf-widget-root .section h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      color: #112831;
+      letter-spacing: 0.02em;
+    }
+
+    #lf-widget-root .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    #lf-widget-root .card {
+      background: var(--panel-strong);
+      border: 1px solid #d4c5a9;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    #lf-widget-root .card h4 {
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+    }
+
+    #lf-widget-root .meta {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    #lf-widget-root .match {
+      margin: 0 0 8px;
+      padding-left: 1.1em;
+      font-size: 0.92rem;
+    }
+
+    #lf-widget-root .disclaimer {
+      margin-top: 14px;
+      color: #5c5f60;
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 640px) {
+      #lf-widget-root {
+        padding: 12px;
+      }
+
+      #lf-widget-root .lfw-content {
+        padding: 14px;
+      }
+
+      #lf-widget-root .question {
+        padding: 12px;
+      }
+
+      #lf-widget-root .lfw-header {
+        padding: 20px 16px 14px;
+      }
+    }
+  </style>
+</head>
+<body style="margin: 0;">
+  <div id="lf-widget-root">
+  <div class="app" id="app">
+    <div class="lfw-header">
+      <h1>ラブクラフト作品診断</h1>
+      <p>12問＋任意1問で、あなた向けの作品を「本命・次点・冒険枠」で提案します。</p>
+    </div>
+
+    <div class="lfw-content">
+      <form id="quiz-form">
+        <div id="question-list"></div>
+
+        <section class="optional">
+          <div class="select-wrap">
+            <label for="q13Difficulty"><strong>追加質問（任意）:</strong> 文章の難易度の好みは？</label>
+            <select id="q13Difficulty">
+              <option value="3" selected>3: どちらでも</option>
+              <option value="1">1: 平易でテンポ重視</option>
+              <option value="2">2: やや平易な方が良い</option>
+              <option value="4">4: 古風でもOK</option>
+              <option value="5">5: 古風・詩的でも歓迎</option>
+            </select>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button type="submit" class="button primary">診断する</button>
+          <button type="button" class="button secondary" id="resetBtn">回答をリセット</button>
+        </div>
+
+        <div class="error" id="errorBox"></div>
+      </form>
+
+      <section class="results" id="results"></section>
+    </div>
+  </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        id: "q1",
+        title: "1) 読後に求める気分は？",
+        options: [
+          "1: ほっとする／きれいに終わる",
+          "2: 少し不穏が残る",
+          "3: ほどよく重い",
+          "4: かなり暗い・救いが薄い",
+          "5: 立ち直りに時間がかかるレベルの重さ"
+        ]
+      },
+      {
+        id: "q2",
+        title: "2) 気持ち悪さ／嫌悪感をどれくらい許容できる？",
+        options: [
+          "1: できれば避けたい",
+          "2: 少しならOK",
+          "3: 中程度ならOK",
+          "4: かなりOK",
+          "5: どぎつくてもOK"
+        ]
+      },
+      {
+        id: "q3",
+        title: "3) 好みは『わかる怖さ』か『わからない怖さ』か？",
+        options: [
+          "1: 正体がはっきりしている怖さが好き",
+          "2: どちらかというと前者",
+          "3: 半々",
+          "4: どちらかというと後者",
+          "5: 理解不能・説明不能の怖さが好き"
+        ]
+      },
+      {
+        id: "q4",
+        title: "4) すぐ怖い vs じわじわ怖い",
+        options: [
+          "1: すぐ事件が起きてほしい",
+          "2: 早めに動いてほしい",
+          "3: どちらでも",
+          "4: じわじわ積み上げが好き",
+          "5: 終盤で一気に来るタイプが好き"
+        ]
+      },
+      {
+        id: "q5",
+        title: "5) 雰囲気は夢っぽい／幻想 vs 現実っぽい／生活感",
+        options: [
+          "1: 現実っぽい方が好き",
+          "2: どちらかというと現実",
+          "3: 半々",
+          "4: どちらかというと夢・幻想",
+          "5: 夢の中みたいな不確かさが好き"
+        ]
+      },
+      {
+        id: "q6",
+        title: "6) 舞台の好み：どこに惹かれる？",
+        options: [
+          "1: 海・港・船／深淵",
+          "2: 田舎・寒村・屋敷",
+          "3: 都市・路地・地下",
+          "4: 遺跡・古代文明・異国",
+          "5: 極地・探検・未知の大地"
+        ]
+      },
+      {
+        id: "q7",
+        title: "7) 伝承・儀式・古いしきたりの要素はどれくらい欲しい？",
+        options: [
+          "1: ほぼ不要",
+          "2: 少しなら",
+          "3: 中くらい",
+          "4: かなり欲しい",
+          "5: 儀式・禁忌が核だと嬉しい"
+        ]
+      },
+      {
+        id: "q8",
+        title: "8) 学術っぽさ／資料っぽさはどれくらい好き？",
+        options: [
+          "1: 苦手（物語として読ませてほしい）",
+          "2: 少しならOK",
+          "3: どちらでも",
+          "4: わりと好き",
+          "5: 大好物（断片をつなぐのが楽しい）"
+        ]
+      },
+      {
+        id: "q9",
+        title: "9) 主人公の立ち位置はどれが好み？",
+        options: [
+          "1: 一般人が巻き込まれる話",
+          "2: どちらかというと一般人",
+          "3: 半々",
+          "4: 研究者／好奇心の調査者",
+          "5: 知ろうとして踏み込む人が好き"
+        ]
+      },
+      {
+        id: "q10",
+        title: "10) 世界観の広がり vs 一本の怖い話",
+        options: [
+          "1: 一本勝負（短く強い）",
+          "2: どちらかというと一本勝負",
+          "3: 半々",
+          "4: 世界観の広がりも欲しい",
+          "5: 神話・歴史・つながりが濃いほど良い"
+        ]
+      },
+      {
+        id: "q11",
+        title: "11) 長さの許容（読む体力）",
+        options: [
+          "1: 断章・超短い話がいい",
+          "2: 短編がいい",
+          "3: 中編までなら",
+          "4: 長編でもOK",
+          "5: 長編歓迎"
+        ]
+      },
+      {
+        id: "q12",
+        title: "12) 最後に残したいものは？",
+        options: [
+          "1: オチの気持ちよさ／スッキリ",
+          "2: どちらかというとスッキリ",
+          "3: 半々",
+          "4: 余韻の不穏さ",
+          "5: 読後も頭から離れない余韻"
+        ]
+      }
+    ];
+
+    const TYPE_KEYS = [
+      "宇宙",
+      "狂気",
+      "不条理",
+      "禁術",
+      "怪奇現象",
+      "異形種族",
+      "サバイバル",
+      "フォークロア",
+      "異教",
+      "歴史",
+      "幻想",
+      "タブー"
+    ];
+
+    const LENGTH_MAP = {
+      "断章": 0.0,
+      "短編": 0.33,
+      "中編": 0.66,
+      "長編": 1.0
+    };
+
+    const STAGE_TAGS = {
+      1: ["海", "深淵", "港", "船"],
+      2: ["田舎", "寒村", "屋敷", "家系", "血", "食人", "真実", "呪い"],
+      3: ["都市", "路地", "地下", "都市史", "幽霊", "禁術", "芸術"],
+      4: ["遺跡", "古代遺跡", "古代文明", "歴史", "異国", "古代儀式", "異教"],
+      5: ["極地", "探検", "未知", "未知の大地", "古代文明", "サバイバル"]
+    };
+
+    const RAW_WORKS = [
+      {
+        title: "ダゴン",
+        tone: { despair: 4, discomfort: 3, afterglow: 3 },
+        difficulty: 4,
+        length: "短編",
+        realism: 1,
+        types: { 宇宙: 1, 狂気: 2, 異形種族: 3 },
+        motifs: ["海", "深淵"],
+        url: "https://amzn.to/3P0NOkF"
+      },
+      {
+        title: "ランドルフ・カーターの供述",
+        tone: { despair: 2, discomfort: 2, afterglow: 3 },
+        difficulty: 5,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 2, 禁術: 1 },
+        motifs: ["墓場", "禁書"],
+        url: "https://amzn.to/3P0NOkF"
+      },
+      {
+        title: "ニャルラトテップ",
+        tone: { despair: 5, discomfort: 2, afterglow: 3 },
+        difficulty: 1,
+        length: "短編",
+        realism: 2,
+        types: { 宇宙: 3, 狂気: 3, 不条理: 3 },
+        motifs: ["古代儀式", "超常技術"],
+        url: "https://amzn.to/3P0NOkF"
+      },
+      {
+        title: "セレファイス",
+        tone: { despair: 1, discomfort: 2, afterglow: 4 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 幻想: 3 },
+        motifs: ["夢", "逃避"],
+        url: "https://amzn.to/3P0NOkF"
+      },
+      {
+        title: "荒廃都市",
+        tone: { despair: 3, discomfort: 1, afterglow: 2 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 異形種族: 3, 異教: 2, 歴史: 3 },
+        motifs: ["古代遺跡", "歴史"],
+        url: "https://amzn.to/4ran12E"
+      },
+      {
+        title: "ヒプノス",
+        tone: { despair: 2, discomfort: 1, afterglow: 3 },
+        difficulty: 2,
+        length: "短編",
+        realism: 2,
+        types: { 狂気: 2, 幻想: 2 },
+        motifs: ["夢", "芸術"],
+        url: "https://amzn.to/4ran12E"
+      },
+      {
+        title: "アザトース",
+        tone: { despair: 1, discomfort: 1, afterglow: 2 },
+        difficulty: 2,
+        length: "断章",
+        realism: 3,
+        types: { 宇宙: 2, 幻想: 2 },
+        motifs: ["幻想"],
+        url: "https://amzn.to/4ran12E"
+      },
+      {
+        title: "白い帆船",
+        tone: { despair: 2, discomfort: 1, afterglow: 4 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 幻想: 3 },
+        motifs: ["夢", "旅"],
+        url: "https://amzn.to/4ran12E"
+      },
+      {
+        title: "ウルタールの猫",
+        tone: { despair: 1, discomfort: 2, afterglow: 2 },
+        difficulty: 1,
+        length: "短編",
+        realism: 3,
+        types: { 怪奇現象: 1, 異教: 1, フォークロア: 1 },
+        motifs: ["猫", "報復"],
+        url: "https://amzn.to/47bRsOW"
+      },
+      {
+        title: "ザ・ブック",
+        tone: { despair: 3, discomfort: 2, afterglow: 2 },
+        difficulty: 2,
+        length: "断章",
+        realism: 1,
+        types: { 狂気: 2, 禁術: 1, 不条理: 2 },
+        motifs: ["禁書", "秘儀"],
+        url: "https://amzn.to/47bRsOW"
+      },
+      {
+        title: "エーリッヒ・ツァンの音楽",
+        tone: { despair: 2, discomfort: 2, afterglow: 3 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 狂気: 2 },
+        motifs: ["音楽", "狂気"],
+        url: "https://amzn.to/47bRsOW"
+      },
+      {
+        title: "壁の中の鼠",
+        tone: { despair: 4, discomfort: 4, afterglow: 4 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 狂気: 3, 怪奇現象: 3, タブー: 3 },
+        motifs: ["家系", "血", "食人", "真実"],
+        url: "https://amzn.to/47bRsOW"
+      },
+      {
+        title: "冷気",
+        tone: { despair: 3, discomfort: 3, afterglow: 3 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 禁術: 3, 怪奇現象: 1 },
+        motifs: ["科学", "腐敗", "秘術"],
+        url: "https://amzn.to/3ONv0FE"
+      },
+      {
+        title: "アウトサイダー",
+        tone: { despair: 4, discomfort: 2, afterglow: 4 },
+        difficulty: 1,
+        length: "短編",
+        realism: 2,
+        types: { 異形種族: 2, 幻想: 2, タブー: 1 },
+        motifs: ["孤独", "自己認識", "真実"],
+        url: "https://amzn.to/3ONv0FE"
+      },
+      {
+        title: "神殿",
+        tone: { despair: 5, discomfort: 2, afterglow: 4 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 異教: 1, 狂気: 3, サバイバル: 3 },
+        motifs: ["海", "深淵", "密室"],
+        url: "https://amzn.to/3ONv0FE"
+      },
+      {
+        title: "ポラリス",
+        tone: { despair: 3, discomfort: 1, afterglow: 4 },
+        difficulty: 2,
+        length: "短編",
+        realism: 3,
+        types: { 狂気: 3, 幻想: 2, 不条理: 1 },
+        motifs: ["夢", "狂気"],
+        url: "https://amzn.to/3ONv0FE"
+      },
+      {
+        title: "銀の鍵",
+        tone: { despair: 1, discomfort: 1, afterglow: 5 },
+        difficulty: 3,
+        length: "短編",
+        realism: 2,
+        types: { 禁術: 1, 幻想: 1, 不条理: 1 },
+        motifs: ["夢", "家系", "時間"],
+        url: "https://amzn.to/4l7aDz4"
+      },
+      {
+        title: "怖ろしい老人",
+        tone: { despair: 2, discomfort: 2, afterglow: 2 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 1, フォークロア: 1, サバイバル: 1 },
+        motifs: ["犯罪", "報復"],
+        url: "https://amzn.to/4l7aDz4"
+      },
+      {
+        title: "外なる神々",
+        tone: { despair: 3, discomfort: 1, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 宇宙: 3, 歴史: 3 },
+        motifs: ["神", "歴史", "神話"],
+        url: "https://amzn.to/4l7aDz4"
+      },
+      {
+        title: "街路",
+        tone: { despair: 1, discomfort: 1, afterglow: 2 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 1, フォークロア: 1 },
+        motifs: ["歴史"],
+        url: "https://amzn.to/4l7aDz4"
+      },
+      {
+        title: "ピックマンのモデル",
+        tone: { despair: 3, discomfort: 5, afterglow: 4 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 禁術: 1, 異形種族: 3, タブー: 3 },
+        motifs: ["芸術", "異形", "真実"],
+        url: "https://amzn.to/4rSQ38v"
+      },
+      {
+        title: "名を冠せぬもの",
+        tone: { despair: 3, discomfort: 3, afterglow: 3 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 2, フォークロア: 2 },
+        motifs: ["怪異存在"],
+        url: "https://amzn.to/4rSQ38v"
+      },
+      {
+        title: "月の湿原",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 怪奇現象: 2, サバイバル: 2 },
+        motifs: ["伝承", "禁忌"],
+        url: "https://amzn.to/4rSQ38v"
+      },
+      {
+        title: "ネクロノミコンの歴史",
+        tone: { despair: 1, discomfort: 1, afterglow: 2 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 宇宙: 1, 禁術: 2, 歴史: 3 },
+        motifs: ["禁書"],
+        url: "https://amzn.to/4rSQ38v"
+      },
+      {
+        title: "眠りの壁の彼岸",
+        tone: { despair: 2, discomfort: 2, afterglow: 4 },
+        difficulty: 4,
+        length: "短編",
+        realism: 2,
+        types: { 禁術: 2, 幻想: 2 },
+        motifs: ["夢", "意思疎通", "真実"],
+        url: "https://amzn.to/46DP43j"
+      },
+      {
+        title: "遺体安置所にて",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 2, サバイバル: 1, タブー: 1 },
+        motifs: ["死体", "ブラックユーモア"],
+        url: "https://amzn.to/46DP43j"
+      },
+      {
+        title: "忘却の彼方へ",
+        tone: { despair: 2, discomfort: 1, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 幻想: 3, 不条理: 1 },
+        motifs: ["夢", "ニヒリズム"],
+        url: "https://amzn.to/46DP43j"
+      },
+      {
+        title: "サミュエル・ジョンソンの回想",
+        tone: { despair: 1, discomfort: 1, afterglow: 1 },
+        difficulty: 4,
+        length: "短編",
+        realism: 1,
+        types: { フォークロア: 1, 歴史: 1 },
+        motifs: ["偽歴史"],
+        url: "https://amzn.to/46DP43j"
+      },
+      {
+        title: "魔犬",
+        tone: { despair: 3, discomfort: 3, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 2,
+        types: { 怪奇現象: 3, サバイバル: 2, タブー: 2 },
+        motifs: ["墓場"],
+        url: "https://amzn.to/3OMT9Mx"
+      },
+      {
+        title: "祝祭",
+        tone: { despair: 4, discomfort: 3, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 2,
+        types: { 異教: 3, サバイバル: 3 },
+        motifs: ["古代儀式", "家系"],
+        url: "https://amzn.to/3OMT9Mx"
+      },
+      {
+        title: "あの男",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 2,
+        types: { 禁術: 1, サバイバル: 1 },
+        motifs: ["都市史", "幽霊"],
+        url: "https://amzn.to/3OMT9Mx"
+      },
+      {
+        title: "イラノンの探求",
+        tone: { despair: 2, discomfort: 1, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { 幻想: 3, 不条理: 2 },
+        motifs: ["夢", "音楽", "冒険"],
+        url: "https://amzn.to/3OMT9Mx"
+      },
+      {
+        title: "ある木",
+        tone: { despair: 1, discomfort: 1, afterglow: 2 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 1, フォークロア: 3 },
+        motifs: ["芸術", "嫉妬"],
+        url: "https://amzn.asia/d/0eNm3yDg"
+      },
+      {
+        title: "放蕩虫",
+        tone: { despair: 1, discomfort: 1, afterglow: 2 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { フォークロア: 3 },
+        motifs: ["禁酒法"],
+        url: "https://amzn.asia/d/0eNm3yDg"
+      },
+      {
+        title: "洞窟の獣",
+        tone: { despair: 2, discomfort: 3, afterglow: 2 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 異形種族: 2, タブー: 3 },
+        motifs: ["サバイバル", "食人"],
+        url: "https://amzn.asia/d/0eNm3yDg"
+      },
+      {
+        title: "錬金術師",
+        tone: { despair: 3, discomfort: 1, afterglow: 2 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 2, サバイバル: 3 },
+        motifs: ["家系", "呪い"],
+        url: "https://amzn.asia/d/0eNm3yDg"
+      },
+      {
+        title: "ファン・ロメロの変容",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 2,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 1, 異教: 1, サバイバル: 1 },
+        motifs: ["古代遺跡", "変容"],
+        url: "https://amzn.to/4b1adFT"
+      },
+      {
+        title: "古き民",
+        tone: { despair: 2, discomfort: 2, afterglow: 2 },
+        difficulty: 3,
+        length: "短編",
+        realism: 2,
+        types: { サバイバル: 1, 幻想: 2, 不条理: 1 },
+        motifs: ["古代祭儀", "夢"],
+        url: "https://amzn.to/4b1adFT"
+      },
+      {
+        title: "サルナスの滅亡",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 3,
+        types: { フォークロア: 1, 幻想: 3 },
+        motifs: ["歴史"],
+        url: "https://amzn.to/4b1adFT"
+      },
+      {
+        title: "アーサー・ジャーミン卿の秘密",
+        tone: { despair: 4, discomfort: 3, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 歴史: 3, タブー: 3 },
+        motifs: ["家系", "歴史", "真実"],
+        url: "https://amzn.to/4b1adFT"
+      },
+      {
+        title: "霧に聳える奇妙な家",
+        tone: { despair: 3, discomfort: 1, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 怪奇現象: 2, フォークロア: 3, サバイバル: 2 },
+        motifs: ["冒険"],
+        url: "https://amzn.asia/d/0g852Hcb"
+      },
+      {
+        title: "邪悪なる牧師",
+        tone: { despair: 3, discomfort: 2, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 禁術: 2, 幻想: 1, タブー: 1 },
+        motifs: ["呪い"],
+        url: "https://amzn.asia/d/0g852Hcb"
+      },
+      {
+        title: "忍ぶ恐怖",
+        tone: { despair: 4, discomfort: 5, afterglow: 3 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { フォークロア: 1, 歴史: 1, タブー: 3 },
+        motifs: ["家系", "地下種族", "食人"],
+        url: "https://amzn.asia/d/0g852Hcb"
+      },
+      {
+        title: "家の中の絵",
+        tone: { despair: 3, discomfort: 2, afterglow: 2 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { フォークロア: 1, サバイバル: 1, タブー: 2 },
+        motifs: ["食人"],
+        url: "https://amzn.asia/d/0g852Hcb"
+      },
+      {
+        title: "闇に現ず",
+        tone: { despair: 4, discomfort: 3, afterglow: 3 },
+        difficulty: 4,
+        length: "短編",
+        realism: 1,
+        types: { 宇宙: 2, 禁術: 2, 歴史: 2 },
+        motifs: ["禁書", "神", "道具"],
+        url: "https://amzn.to/4rmNyu4"
+      },
+      {
+        title: "宇宙からの色",
+        tone: { despair: 5, discomfort: 4, afterglow: 5 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 宇宙: 3, 狂気: 3, 怪奇現象: 3 },
+        motifs: ["隕石", "放射", "崩壊"],
+        url: "https://amzn.to/4spLxOm"
+      },
+      {
+        title: "クトゥルフの呼び声",
+        tone: { despair: 5, discomfort: 3, afterglow: 5 },
+        difficulty: 4,
+        length: "中編",
+        realism: 1,
+        types: { 宇宙: 2, 怪奇現象: 2, 歴史: 3 },
+        motifs: ["神話", "真実", "海"],
+        url: "https://amzn.asia/d/0amrZy8H"
+      },
+      {
+        title: "インスマウスの影",
+        tone: { despair: 5, discomfort: 4, afterglow: 5 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 異形種族: 3, 歴史: 3, サバイバル: 3 },
+        motifs: ["海", "混血", "真実"],
+        url: "https://amzn.asia/d/0i1cy5zH"
+      },
+      {
+        title: "未知なるカダスを夢に求めて",
+        tone: { despair: 5, discomfort: 2, afterglow: 5 },
+        difficulty: 5,
+        length: "長編",
+        realism: 3,
+        types: { 宇宙: 3, 異形種族: 3, 幻想: 3 },
+        motifs: ["夢", "冒険", "神"],
+        url: "https://amzn.asia/d/0e9hZSsX"
+      },
+      {
+        title: "ダンウィッチの怪",
+        tone: { despair: 5, discomfort: 4, afterglow: 5 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 怪奇現象: 3, 異形種族: 2, サバイバル: 3 },
+        motifs: ["家系", "古代儀式", "真実"],
+        url: "https://amzn.asia/d/03FTypaI"
+      },
+      {
+        title: "時間からの影",
+        tone: { despair: 4, discomfort: 2, afterglow: 5 },
+        difficulty: 3,
+        length: "長編",
+        realism: 2,
+        types: { 宇宙: 2, 歴史: 3, 不条理: 3 },
+        motifs: ["時間", "真実"],
+        url: "https://amzn.asia/d/04mkFfJ7"
+      },
+      {
+        title: "闇に囁くもの",
+        tone: { despair: 4, discomfort: 2, afterglow: 5 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 宇宙: 2, 狂気: 2, 異形種族: 2 },
+        motifs: ["異形", "真実"],
+        url: "https://amzn.asia/d/0aucw8Lb"
+      },
+      {
+        title: "狂気の山脈にて",
+        tone: { despair: 5, discomfort: 4, afterglow: 5 },
+        difficulty: 4,
+        length: "長編",
+        realism: 1,
+        types: { 狂気: 3, 異形種族: 3, 歴史: 3, サバイバル: 3 },
+        motifs: ["古代文明", "探検", "歴史", "異形"],
+        url: "https://amzn.asia/d/0dJQBDem"
+      },
+      {
+        title: "戸口に現れたもの",
+        tone: { despair: 4, discomfort: 3, afterglow: 4 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 禁術: 2, 怪奇現象: 2, フォークロア: 1 },
+        motifs: ["禁術", "真実"],
+        url: "https://amzn.asia/d/04We8GA0"
+      },
+      {
+        title: "チャールズ・ウォードの奇怪な事件",
+        tone: { despair: 4, discomfort: 4, afterglow: 5 },
+        difficulty: 5,
+        length: "長編",
+        realism: 1,
+        types: { 狂気: 3, 禁術: 3, 歴史: 3 },
+        motifs: ["禁術", "真実"],
+        url: "https://amzn.asia/d/0isL72Y2"
+      },
+      {
+        title: "忌まれた家",
+        tone: { despair: 4, discomfort: 4, afterglow: 4 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 禁術: 2, 怪奇現象: 3, フォークロア: 3 },
+        motifs: ["禁術", "異形"],
+        url: "https://amzn.asia/d/042dhigf"
+      },
+      {
+        title: "魔女の家の夢",
+        tone: { despair: 3, discomfort: 3, afterglow: 3 },
+        difficulty: 3,
+        length: "短編",
+        realism: 1,
+        types: { 宇宙: 1, 狂気: 2, 歴史: 2 },
+        motifs: ["夢", "歴史", "神", "魔術"],
+        url: "https://amzn.asia/d/0cD3umbd"
+      },
+      {
+        title: "死体蘇生者 ハーバート・ウェスト",
+        tone: { despair: 3, discomfort: 3, afterglow: 3 },
+        difficulty: 3,
+        length: "中編",
+        realism: 1,
+        types: { 狂気: 1, 禁術: 3, タブー: 2 },
+        motifs: ["禁術", "墓", "死体"],
+        url: "https://amzn.asia/d/0fVUBlqt"
+      }
+    ];
+
+    function normalize01From5(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return 0.5;
+      const clamped = Math.min(5, Math.max(1, n));
+      return (clamped - 1) / 4;
+    }
+
+    function lengthTo01(lengthLabel) {
+      return LENGTH_MAP[lengthLabel] ?? 0.33;
+    }
+
+    function preprocessWork(work) {
+      const normalizedTypes = {};
+      TYPE_KEYS.forEach((type) => {
+        const raw = Number(work.types[type] || 0);
+        normalizedTypes[type] = Math.max(0, Math.min(1, raw / 3));
+      });
+
+      return {
+        ...work,
+        D: normalize01From5(work.tone.despair),
+        U: normalize01From5(work.tone.discomfort),
+        A: normalize01From5(work.tone.afterglow),
+        R: normalize01From5(work.difficulty),
+        S: Math.max(0, Math.min(1, (Number(work.realism) - 1) / 2)),
+        L: lengthTo01(work.length),
+        typeVector: normalizedTypes
+      };
+    }
+
+    const WORKS = RAW_WORKS.map(preprocessWork);
+
+    function clamp01(v) {
+      return Math.max(0, Math.min(1, v));
+    }
+
+    function cosineSimilarity(vectorA, vectorB) {
+      let dot = 0;
+      let normA = 0;
+      let normB = 0;
+
+      TYPE_KEYS.forEach((key) => {
+        const a = vectorA[key] || 0;
+        const b = vectorB[key] || 0;
+        dot += a * b;
+        normA += a * a;
+        normB += b * b;
+      });
+
+      if (!normA || !normB) return 0;
+      return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    function weightedMean(pairs) {
+      let sum = 0;
+      let totalWeight = 0;
+      pairs.forEach(([value, weight]) => {
+        sum += value * weight;
+        totalWeight += weight;
+      });
+      return totalWeight ? sum / totalWeight : 0;
+    }
+
+    function collectAnswers() {
+      const answers = {};
+      for (let i = 1; i <= 12; i += 1) {
+        const input = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!input) {
+          return { error: `${i}番の質問に回答してください。` };
+        }
+        answers[`q${i}`] = Number(input.value);
+      }
+
+      answers.q13Difficulty = Number(document.getElementById("q13Difficulty").value || 3);
+      return { answers };
+    }
+
+    function zeroTypeVector() {
+      return TYPE_KEYS.reduce((acc, key) => {
+        acc[key] = 0;
+        return acc;
+      }, {});
+    }
+
+    function buildUserProfile(answers) {
+      const x1 = normalize01From5(answers.q1);
+      const x2 = normalize01From5(answers.q2);
+      const x3 = normalize01From5(answers.q3);
+      const x4 = normalize01From5(answers.q4);
+      const x5 = normalize01From5(answers.q5);
+      const x6 = Number(answers.q6);
+      const x7 = normalize01From5(answers.q7);
+      const x8 = normalize01From5(answers.q8);
+      const x9 = normalize01From5(answers.q9);
+      const x10 = normalize01From5(answers.q10);
+      const x11 = normalize01From5(answers.q11);
+      const x12 = normalize01From5(answers.q12);
+      const xR = normalize01From5(answers.q13Difficulty);
+
+      const typeVector = zeroTypeVector();
+
+      typeVector["宇宙"] = clamp01(x3 + x10 * 0.35 + (x6 === 1 ? 0.1 : 0));
+      typeVector["不条理"] = clamp01(x3 * 0.85 + x5 * 0.2);
+      typeVector["狂気"] = clamp01(x3 * 0.7 + x9 * 0.2 + x10 * 0.1);
+      typeVector["禁術"] = clamp01(x3 * 0.6 + x7 * 0.2 + x9 * 0.35 + (x6 === 3 ? 0.1 : 0));
+      typeVector["怪奇現象"] = clamp01(x3 * 0.45 + (1 - x4) * 0.45 + (x6 === 2 ? 0.12 : 0));
+      typeVector["異形種族"] = clamp01(x3 * 0.3 + x10 * 0.25 + (x6 === 5 ? 0.15 : 0));
+      typeVector["サバイバル"] = clamp01((1 - x3) * 0.45 + (1 - x4) * 0.42 + (x6 === 5 ? 0.18 : 0));
+      typeVector["フォークロア"] = clamp01((1 - x3) * 0.35 + x7 * 0.5 + (x6 === 2 ? 0.15 : 0));
+      typeVector["異教"] = clamp01(x7 * 0.72 + (x6 === 4 ? 0.15 : 0));
+      typeVector["歴史"] = clamp01(x7 * 0.38 + x8 * 0.6 + x9 * 0.3 + x10 * 0.45 + (x6 === 4 ? 0.1 : 0));
+      typeVector["幻想"] = clamp01(x5 * 0.8 + x4 * 0.15 + (x6 >= 4 ? 0.1 : 0));
+      typeVector["タブー"] = clamp01(x2 * 0.55 + x7 * 0.15 + (x6 === 2 ? 0.08 : 0));
+
+      const targetD = clamp01(x1 * 0.65 + (x12 * 0.6) * 0.35);
+      const targetA = clamp01(x1 * 0.4 + x12 * 0.6);
+
+      const profile = {
+        x2,
+        x4,
+        x5,
+        x7,
+        x8,
+        x9,
+        x10,
+        stageChoice: x6,
+        targetD,
+        targetU: x2,
+        toleranceU: x2,
+        targetA,
+        targetS: x5,
+        targetL: clamp01(x4 * 0.45 + x11 * 0.55),
+        toleranceL: x11,
+        targetR: xR,
+        toleranceR: xR,
+        typeVector
+      };
+
+      return profile;
+    }
+
+    function buildExpectedTags(profile) {
+      const tags = new Set(STAGE_TAGS[profile.stageChoice] || []);
+
+      if (profile.x7 >= 0.5) {
+        ["古代儀式", "禁忌", "異教", "伝承", "祭儀", "神話"].forEach((tag) => tags.add(tag));
+      }
+      if (profile.x8 >= 0.5) {
+        ["禁書", "秘儀", "真実", "歴史", "記録", "断片"].forEach((tag) => tags.add(tag));
+      }
+      if (profile.x9 >= 0.5) {
+        ["真実", "禁書", "歴史", "調査", "家系"].forEach((tag) => tags.add(tag));
+      }
+      if (profile.x5 >= 0.5) {
+        ["夢", "幻想", "時間"].forEach((tag) => tags.add(tag));
+      }
+      if (profile.x10 >= 0.6) {
+        ["神話", "歴史", "古代文明", "宇宙", "神"].forEach((tag) => tags.add(tag));
+      }
+
+      return [...tags];
+    }
+
+    function tagMatches(workMotif, expectedTag) {
+      return workMotif.includes(expectedTag) || expectedTag.includes(workMotif);
+    }
+
+    function scoreTagMatch(work, expectedTags) {
+      if (!expectedTags.length) return { score: 0.5, matched: [] };
+      const matched = expectedTags.filter((tag) =>
+        work.motifs.some((motif) => tagMatches(motif, tag))
+      );
+      return {
+        score: matched.length / expectedTags.length,
+        matched
+      };
+    }
+
+    function calculatePenalty(work, profile) {
+      let penalty = 1;
+
+      if (work.U > profile.toleranceU + 0.45) {
+        penalty *= 0.15;
+      } else if (work.U > profile.toleranceU + 0.25) {
+        penalty *= 0.4;
+      }
+
+      if (work.L > profile.toleranceL + 0.45) {
+        penalty *= 0.2;
+      } else if (work.L > profile.toleranceL + 0.25) {
+        penalty *= 0.55;
+      }
+
+      if (work.R > profile.toleranceR + 0.45) {
+        penalty *= 0.4;
+      } else if (work.R > profile.toleranceR + 0.25) {
+        penalty *= 0.7;
+      }
+
+      return penalty;
+    }
+
+    function buildReasons(work, profile, matchedTags, typeScore) {
+      const reasons = [];
+
+      const diffs = [
+        { d: Math.abs(work.A - profile.targetA), text: "余韻の強さが希望に近い" },
+        { d: Math.abs(work.D - profile.targetD), text: "読後の重さが狙いと一致" },
+        { d: Math.abs(work.S - profile.targetS), text: "現実寄り／幻想寄りのバランスが合う" },
+        { d: Math.abs(work.L - profile.targetL), text: "読み切りやすさ（長さ）が合う" },
+        { d: Math.abs(work.U - profile.targetU), text: "不快度が許容範囲に収まりやすい" },
+        { d: Math.abs(work.R - profile.targetR), text: "文章の難解さが好みに近い" }
+      ];
+
+      diffs
+        .sort((a, b) => a.d - b.d)
+        .slice(0, 2)
+        .forEach((item) => reasons.push(item.text));
+
+      if (typeScore >= 0.7) {
+        reasons.push("物語タイプ（宇宙・狂気・禁術など）の相性が高い");
+      }
+
+      if (!reasons.length) reasons.push("総合スコアで上位一致");
+      return reasons.slice(0, 3);
+    }
+
+    function evaluateWorks(profile) {
+      const expectedTags = buildExpectedTags(profile);
+
+      const scored = WORKS.map((work) => {
+        const scoreNum = 1 - weightedMean([
+          [Math.abs(work.A - profile.targetA), 0.18],
+          [Math.abs(work.D - profile.targetD), 0.12],
+          [Math.abs(work.U - profile.targetU), 0.1],
+          [Math.abs(work.S - profile.targetS), 0.1],
+          [Math.abs(work.L - profile.targetL), 0.12],
+          [Math.abs(work.R - profile.targetR), 0.08]
+        ]);
+
+        const scoreType = cosineSimilarity(profile.typeVector, work.typeVector);
+        const tagResult = scoreTagMatch(work, expectedTags);
+        const penalty = calculatePenalty(work, profile);
+
+        const baseScore = clamp01(0.55 * scoreNum + 0.3 * scoreType + 0.15 * tagResult.score);
+        const finalScore = clamp01(baseScore * penalty);
+
+        return {
+          work,
+          scoreNum,
+          scoreType,
+          scoreTag: tagResult.score,
+          matchedTags: tagResult.matched,
+          penalty,
+          baseScore,
+          finalScore,
+          reasons: buildReasons(work, profile, tagResult.matched, scoreType)
+        };
+      });
+
+      scored.sort((a, b) => b.finalScore - a.finalScore);
+      return scored;
+    }
+
+    function pickAdventure(scored, alreadySelectedTitles, profile, topWork) {
+      if (profile.x10 < 0.6) return null;
+
+      const remaining = scored.filter((item) => !alreadySelectedTitles.has(item.work.title));
+      const top = topWork || remaining[0];
+      if (!remaining.length || !top) return null;
+
+      const candidates = remaining
+        .map((item) => {
+          const novelty = weightedMean([
+            [Math.abs(item.work.S - top.work.S), 0.35],
+            [Math.abs(item.work.L - top.work.L), 0.35],
+            [Math.abs(item.work.U - top.work.U), 0.3]
+          ]);
+
+          const worldPotential = weightedMean([
+            [item.work.typeVector["宇宙"], 0.35],
+            [item.work.typeVector["歴史"], 0.25],
+            [item.work.A, 0.2],
+            [item.work.L, 0.2]
+          ]);
+
+          return {
+            ...item,
+            adventureScore: item.finalScore * 0.72 + novelty * 0.18 + worldPotential * 0.1
+          };
+        })
+        .filter((item) => item.finalScore > 0.28)
+        .sort((a, b) => b.adventureScore - a.adventureScore);
+
+      return candidates[0] || null;
+    }
+
+    function cardHTML(item) {
+      const scorePct = Math.round(item.finalScore * 100);
+
+      return `
+        <article class="card">
+          <h4>${item.work.title}</h4>
+          <p class="meta">一致度: ${scorePct}% / ${item.work.length} / 難易度 ${item.work.difficulty}</p>
+          <ul class="match">
+            ${item.reasons.map((reason) => `<li>${reason}</li>`).join("")}
+          </ul>
+          <a class="button primary" href="${item.work.url}" target="_blank" rel="noopener noreferrer">購入リンクを見る</a>
+        </article>
+      `;
+    }
+
+    function renderResults(scored, profile) {
+      const resultsEl = document.getElementById("results");
+      const topPicks = scored.slice(0, 3);
+      const runnerUps = scored.slice(3, 5);
+      const selected = new Set([...topPicks, ...runnerUps].map((item) => item.work.title));
+      const adventure = pickAdventure(scored, selected, profile, topPicks[0]);
+
+      const sections = [];
+
+      sections.push(`
+        <div class="section">
+          <h3>本命（条件一致が高い3本）</h3>
+          <div class="cards">${topPicks.map(cardHTML).join("")}</div>
+        </div>
+      `);
+
+      sections.push(`
+        <div class="section">
+          <h3>次点（近いが一部だけ違う2本）</h3>
+          <div class="cards">${runnerUps.map(cardHTML).join("")}</div>
+        </div>
+      `);
+
+      if (adventure) {
+        sections.push(`
+          <div class="section">
+            <h3>冒険枠（新しい方向性の1本）</h3>
+            <div class="cards">${cardHTML(adventure)}</div>
+          </div>
+        `);
+      }
+
+      resultsEl.innerHTML = `
+        <h2>診断結果</h2>
+        <p class="lead">入力した嗜好をもとに、スコア上位を抽出しました。</p>
+        ${sections.join("")}
+        <p class="disclaimer">※外部リンクは販売ページです。実際の版・収録作品はリンク先でご確認ください。</p>
+      `;
+      resultsEl.style.display = "block";
+      resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderQuestions() {
+      const root = document.getElementById("question-list");
+      root.innerHTML = QUESTIONS.map((q) => {
+        const optionsHTML = q.options
+          .map((text, idx) => {
+            const value = idx + 1;
+            return `
+              <label class="option">
+                <input type="radio" name="${q.id}" value="${value}" />
+                <span>${text}</span>
+              </label>
+            `;
+          })
+          .join("");
+
+        return `
+          <fieldset class="question">
+            <legend class="q-title">${q.title}</legend>
+            <div class="options">${optionsHTML}</div>
+          </fieldset>
+        `;
+      }).join("");
+    }
+
+    function showError(message) {
+      const box = document.getElementById("errorBox");
+      box.textContent = message;
+      box.style.display = "block";
+    }
+
+    function clearError() {
+      const box = document.getElementById("errorBox");
+      box.textContent = "";
+      box.style.display = "none";
+    }
+
+    function attachEvents() {
+      const form = document.getElementById("quiz-form");
+      const resetBtn = document.getElementById("resetBtn");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearError();
+
+        const { error, answers } = collectAnswers();
+        if (error) {
+          showError(error);
+          return;
+        }
+
+        const profile = buildUserProfile(answers);
+        const scored = evaluateWorks(profile);
+        renderResults(scored, profile);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+        clearError();
+        const resultsEl = document.getElementById("results");
+        resultsEl.style.display = "none";
+        resultsEl.innerHTML = "";
+      });
+    }
+
+    renderQuestions();
+    attachEvents();
+  </script>
+</body>
+</html>
