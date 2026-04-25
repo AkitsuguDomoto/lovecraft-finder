@@ -1502,6 +1502,7 @@
       const targetA = clamp01(x1 * 0.4 + x12 * 0.6);
 
       const profile = {
+        prefersClosedEnding: Number(answers.q1) === 1,
         x2,
         x4,
         x5,
@@ -1614,7 +1615,9 @@
     function evaluateWorks(profile) {
       const expectedTags = buildExpectedTags(profile);
 
-      const scored = WORKS.map((work) => {
+      const candidateWorks = WORKS.filter((work) => !(profile.prefersClosedEnding && work.length === "断章"));
+
+      const scored = candidateWorks.map((work) => {
         const scoreNum = 1 - weightedMean([
           [Math.abs(work.A - profile.targetA), 0.18],
           [Math.abs(work.D - profile.targetD), 0.12],
