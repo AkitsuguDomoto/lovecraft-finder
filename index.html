@@ -642,7 +642,7 @@
         id: "q11",
         title: "11) 長さの許容（読む体力）",
         options: [
-          "1: 断章・超短い話がいい",
+          "1: 掌編・超短い話がいい",
           "2: 短編がいい",
           "3: 中編までなら",
           "4: 長編でもOK",
@@ -1502,7 +1502,7 @@
       const targetA = clamp01(x1 * 0.4 + x12 * 0.6);
 
       const profile = {
-        prefersClosedEnding: Number(answers.q1) === 1,
+        prefersClosedEnding: Number(answers.q1) === 1 || Number(answers.q12) <= 2,
         x2,
         x4,
         x5,
@@ -1732,10 +1732,13 @@
 
     function renderResults(scored, profile, answers, options = {}) {
       const resultsEl = document.getElementById("results");
-      const topPicks = scored.slice(0, 3);
-      const runnerUps = scored.slice(3, 5);
+      const visibleScored = profile.prefersClosedEnding
+        ? scored.filter((item) => item.work.length !== "断章")
+        : scored;
+      const topPicks = visibleScored.slice(0, 3);
+      const runnerUps = visibleScored.slice(3, 5);
       const selected = new Set([...topPicks, ...runnerUps].map((item) => item.work.title));
-      const adventure = pickAdventure(scored, selected, profile, topPicks[0]);
+      const adventure = pickAdventure(visibleScored, selected, profile, topPicks[0]);
       const shareUrl = buildResultUrl(answers);
       const shareLinks = buildShareLinks(topPicks[0], shareUrl);
       const shouldScroll = options.scroll !== false;
