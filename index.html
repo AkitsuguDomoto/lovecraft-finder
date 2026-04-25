@@ -1349,6 +1349,7 @@
       const url = new URL(window.location.href);
       const hashParams = new URLSearchParams();
       url.hash = "";
+      url.search = "";
       hashParams.set("v", SHARE_QUERY_VERSION);
       hashParams.set("a", buildAnswerKey(answers));
       hashParams.set("d", String(answers.q13Difficulty || DEFAULT_DIFFICULTY));
@@ -1680,19 +1681,50 @@
       return candidates[0] || null;
     }
 
-    function cardHTML(item) {
-      const scorePct = Math.round(item.finalScore * 100);
+    function createElement(tagName, options = {}) {
+      const element = document.createElement(tagName);
+      if (options.className) element.className = options.className;
+      if (options.text !== undefined) element.textContent = options.text;
+      return element;
+    }
 
-      return `
-        <article class="card">
-          <h4>${item.work.title}</h4>
-          <p class="meta">一致度: ${scorePct}% / ${item.work.length} / 難易度 ${item.work.difficulty}</p>
-          <ul class="match">
-            ${item.reasons.map((reason) => `<li>${reason}</li>`).join("")}
-          </ul>
-          <a class="button primary" href="${item.work.url}" target="_blank" rel="noopener noreferrer">購入リンクを見る</a>
-        </article>
-      `;
+    function createExternalLink(href, text, className) {
+      const link = createElement("a", { className, text });
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      return link;
+    }
+
+    function createCard(item) {
+      const scorePct = Math.round(item.finalScore * 100);
+      const article = createElement("article", { className: "card" });
+      const title = createElement("h4", { text: item.work.title });
+      const meta = createElement("p", {
+        className: "meta",
+        text: `一致度: ${scorePct}% / ${item.work.length} / 難易度 ${item.work.difficulty}`
+      });
+      const reasons = createElement("ul", { className: "match" });
+
+      item.reasons.forEach((reason) => {
+        reasons.appendChild(createElement("li", { text: reason }));
+      });
+
+      article.append(title, meta, reasons, createExternalLink(item.work.url, "購入リンクを見る", "button primary"));
+      return article;
+    }
+
+    function createSection(title, items) {
+      const section = createElement("div", { className: "section" });
+      const heading = createElement("h3", { text: title });
+      const cards = createElement("div", { className: "cards" });
+
+      items.forEach((item) => {
+        cards.appendChild(createCard(item));
+      });
+
+      section.append(heading, cards);
+      return section;
     }
 
     function renderResults(scored, profile, answers, options = {}) {
@@ -1704,62 +1736,58 @@
       const shareUrl = buildResultUrl(answers);
       const shareLinks = buildShareLinks(topPicks[0], shareUrl);
       const shouldScroll = options.scroll !== false;
+      const fragment = document.createDocumentFragment();
+      const title = createElement("h2", { text: "診断結果" });
+      const lead = createElement("p", {
+        className: "lead",
+        text: "入力した嗜好をもとに、スコア上位を抽出しました。"
+      });
+      const sharePanel = createElement("div", { className: "share-panel" });
+      const shareSummary = createElement("p", {
+        className: "share-summary",
+        text: `本命は「${topPicks[0].work.title}」でした。結果専用URL付きで共有できます。`
+      });
+      const shareActions = createElement("div", { className: "share-actions" });
+      const copyButton = createElement("button", {
+        className: "button secondary",
+        text: "URLをコピー"
+      });
 
-      const sections = [];
+      copyButton.type = "button";
+      shareActions.append(
+        createExternalLink(shareLinks.x, "Xで共有", "button share-x"),
+        createExternalLink(shareLinks.line, "LINEで共有", "button share-line"),
+        createExternalLink(shareLinks.threads, "Threadsで共有", "button share-threads"),
+        copyButton
+      );
+      sharePanel.append(shareSummary, shareActions);
 
-      sections.push(`
-        <div class="section">
-          <h3>本命（条件一致が高い3本）</h3>
-          <div class="cards">${topPicks.map(cardHTML).join("")}</div>
-        </div>
-      `);
-
-      sections.push(`
-        <div class="section">
-          <h3>次点（近いが一部だけ違う2本）</h3>
-          <div class="cards">${runnerUps.map(cardHTML).join("")}</div>
-        </div>
-      `);
+      fragment.append(title, lead, sharePanel);
+      fragment.appendChild(createSection("本命（条件一致が高い3本）", topPicks));
+      fragment.appendChild(createSection("次点（近いが一部だけ違う2本）", runnerUps));
 
       if (adventure) {
-        sections.push(`
-          <div class="section">
-            <h3>冒険枠（新しい方向性の1本）</h3>
-            <div class="cards">${cardHTML(adventure)}</div>
-          </div>
-        `);
+        fragment.appendChild(createSection("冒険枠（新しい方向性の1本）", [adventure]));
       }
 
-      resultsEl.innerHTML = `
-        <h2>診断結果</h2>
-        <p class="lead">入力した嗜好をもとに、スコア上位を抽出しました。</p>
-        <div class="share-panel">
-          <p class="share-summary">本命は「${topPicks[0].work.title}」でした。結果専用URL付きで共有できます。</p>
-          <div class="share-actions">
-            <a class="button share-x" href="${shareLinks.x}" target="_blank" rel="noopener noreferrer">Xで共有</a>
-            <a class="button share-line" href="${shareLinks.line}" target="_blank" rel="noopener noreferrer">LINEで共有</a>
-            <a class="button share-threads" href="${shareLinks.threads}" target="_blank" rel="noopener noreferrer">Threadsで共有</a>
-            <button type="button" class="button secondary" id="share-copy-btn">URLをコピー</button>
-          </div>
-        </div>
-        ${sections.join("")}
-        <p class="disclaimer">※外部リンクは販売ページです。実際の版・収録作品はリンク先でご確認ください。</p>
-      `;
+      fragment.appendChild(createElement("p", {
+        className: "disclaimer",
+        text: "※外部リンクは販売ページです。実際の版・収録作品はリンク先でご確認ください。"
+      }));
+
+      resultsEl.replaceChildren(fragment);
 
       replaceUrlSilently(shareUrl);
       resultsEl.style.display = "block";
 
-      const copyButton = document.getElementById("share-copy-btn");
-      if (copyButton) {
-        copyButton.addEventListener("click", async () => {
-          const copied = await copyText(shareUrl);
-          const originalLabel = "URLをコピー";
-          copyButton.textContent = copied ? "URLをコピーしました" : "コピーできませんでした";
-          window.setTimeout(() => {
-            copyButton.textContent = originalLabel;
-          }, 1800);
-        });
-      }
+      copyButton.addEventListener("click", async () => {
+        const copied = await copyText(shareUrl);
+        const originalLabel = "URLをコピー";
+        copyButton.textContent = copied ? "URLをコピーしました" : "コピーできませんでした";
+        window.setTimeout(() => {
+          copyButton.textContent = originalLabel;
+        }, 1800);
+      });
 
       if (shouldScroll) {
         resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1768,26 +1796,31 @@
 
     function renderQuestions() {
       const root = document.getElementById("question-list");
-      root.innerHTML = QUESTIONS.map((q) => {
-        const optionsHTML = q.options
-          .map((text, idx) => {
-            const value = idx + 1;
-            return `
-              <label class="option">
-                <input type="radio" name="${q.id}" value="${value}" />
-                <span>${text}</span>
-              </label>
-            `;
-          })
-          .join("");
+      const fragment = document.createDocumentFragment();
 
-        return `
-          <fieldset class="question">
-            <legend class="q-title">${q.title}</legend>
-            <div class="options">${optionsHTML}</div>
-          </fieldset>
-        `;
-      }).join("");
+      QUESTIONS.forEach((q) => {
+        const fieldset = createElement("fieldset", { className: "question" });
+        const legend = createElement("legend", { className: "q-title", text: q.title });
+        const options = createElement("div", { className: "options" });
+
+        q.options.forEach((text, idx) => {
+          const value = idx + 1;
+          const label = createElement("label", { className: "option" });
+          const input = createElement("input");
+          const span = createElement("span", { text });
+
+          input.type = "radio";
+          input.name = q.id;
+          input.value = String(value);
+          label.append(input, span);
+          options.appendChild(label);
+        });
+
+        fieldset.append(legend, options);
+        fragment.appendChild(fieldset);
+      });
+
+      root.replaceChildren(fragment);
     }
 
     function showError(message) {
@@ -1827,7 +1860,7 @@
         clearResultUrl();
         const resultsEl = document.getElementById("results");
         resultsEl.style.display = "none";
-        resultsEl.innerHTML = "";
+        resultsEl.replaceChildren();
       });
     }
 
