@@ -1,31 +1,25 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ラブクラフト診断レコメンド</title>
   <style>
     #lf-widget-root {
-      --bg-1: #061419;
-      --bg-2: #10242d;
-      --panel: rgba(243, 234, 214, 0.92);
-      --panel-strong: #f0e8d6;
-      --ink: #1f2224;
-      --muted: #4d5456;
-      --accent: #b8462f;
-      --accent-2: #0d7f7b;
-      --line: #d7cbb2;
-      --shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      --bg-1: #010406;
+      --bg-2: #071318;
+      --panel: rgba(7, 16, 18, 0.94);
+      --panel-strong: rgba(12, 23, 26, 0.9);
+      --ink: #e2dbc8;
+      --muted: #98a39b;
+      --accent: #b59a62;
+      --accent-2: #6e948d;
+      --accent-3: #6b2b28;
+      --line: rgba(181, 154, 98, 0.34);
+      --line-strong: rgba(205, 185, 132, 0.62);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
       margin: 0;
-      min-height: 100vh;
+      min-height: auto;
       font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 15% 20%, rgba(13, 127, 123, 0.25), transparent 36%),
-        radial-gradient(circle at 85% 80%, rgba(184, 70, 47, 0.20), transparent 34%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      background: transparent;
       line-height: 1.7;
-      padding: 24px;
+      padding: 0;
+      position: relative;
     }
 
     #lf-widget-root,
@@ -36,12 +30,13 @@
     #lf-widget-root .app {
       max-width: 980px;
       margin: 0 auto;
-      background: var(--panel);
-      border: 1px solid rgba(239, 227, 201, 0.8);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
       overflow: hidden;
       animation: rise 0.8s ease;
+      position: relative;
     }
 
     @keyframes rise {
@@ -82,21 +77,52 @@
     }
 
     #lf-widget-root .lfw-content {
-      padding: 22px;
+      padding: 10px 0 14px;
       position: static !important;
       margin-top: 0 !important;
       display: block !important;
     }
 
+    #lf-widget-root .lfw-content::before {
+      content: "";
+      display: block;
+      height: 1px;
+      margin-bottom: 18px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(205, 185, 132, 0.72) 18%,
+        rgba(110, 148, 141, 0.38) 50%,
+        rgba(205, 185, 132, 0.72) 82%,
+        transparent
+      );
+    }
+
     #lf-widget-root .question {
-      padding: 16px;
+      padding: 18px 18px 16px;
       margin-bottom: 14px;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.55);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(16, 29, 32, 0.82), rgba(10, 19, 21, 0.94));
       transform: translateY(6px);
       opacity: 0;
       animation: staggerIn 0.55s ease forwards;
+      position: relative;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+        0 14px 26px rgba(0, 0, 0, 0.22);
+    }
+
+    #lf-widget-root .question::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 14px;
+      bottom: 14px;
+      width: 2px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(110, 148, 141, 0.8), rgba(181, 154, 98, 0.16));
     }
 
     #lf-widget-root .question:nth-child(1) { animation-delay: 0.03s; }
@@ -120,14 +146,16 @@
     }
 
     #lf-widget-root .q-title {
-      margin: 0 0 10px;
-      font-size: 1rem;
+      margin: 0 0 12px 12px;
+      font-size: 1.02rem;
       font-weight: 700;
+      color: #eadfbd;
+      letter-spacing: 0.04em;
     }
 
     #lf-widget-root .options {
       display: grid;
-      gap: 8px;
+      gap: 10px;
     }
 
     #lf-widget-root .option {
@@ -135,34 +163,61 @@
       align-items: flex-start;
       gap: 8px;
       font-size: 0.96rem;
+      padding: 11px 12px;
+      border: 1px solid rgba(181, 154, 98, 0.16);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.015);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+    }
+
+    #lf-widget-root .option:hover {
+      transform: translateX(2px);
+      border-color: rgba(205, 185, 132, 0.34);
+      background: rgba(110, 148, 141, 0.08);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+    }
+
+    #lf-widget-root .option:has(input:checked) {
+      border-color: rgba(205, 185, 132, 0.64);
+      background: linear-gradient(90deg, rgba(110, 148, 141, 0.2), rgba(181, 154, 98, 0.08));
+      box-shadow: 0 0 0 1px rgba(205, 185, 132, 0.14);
     }
 
     #lf-widget-root .option input {
-      margin-top: 0.25em;
-      accent-color: var(--accent-2);
+      margin-top: 0.35em;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    #lf-widget-root .option span {
+      display: block;
     }
 
     #lf-widget-root .optional {
       margin-top: 20px;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px dashed #b89f78;
-      background: rgba(243, 236, 223, 0.7);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px dashed rgba(205, 185, 132, 0.42);
+      background: linear-gradient(180deg, rgba(17, 29, 31, 0.74), rgba(10, 19, 21, 0.92));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
     #lf-widget-root .optional h3 {
       margin: 0 0 10px;
       font-size: 1rem;
+      color: #eadfbd;
     }
 
     #lf-widget-root textarea {
       width: 100%;
       min-height: 86px;
       padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #c4b08a;
+      border-radius: 10px;
+      border: 1px solid rgba(205, 185, 132, 0.34);
       font: inherit;
-      background: #fff;
+      background: rgba(4, 10, 12, 0.84);
+      color: var(--ink);
     }
 
     #lf-widget-root .select-wrap {
@@ -173,68 +228,73 @@
 
     #lf-widget-root select {
       max-width: 420px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #c4b08a;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(205, 185, 132, 0.34);
       font: inherit;
-      background: #fff;
+      background: rgba(4, 10, 12, 0.84);
+      color: var(--ink);
     }
 
     #lf-widget-root .actions {
-      margin-top: 18px;
+      margin-top: 20px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
 
     #lf-widget-root .button {
-      border: 0;
+      border: 1px solid transparent;
       border-radius: 999px;
-      padding: 10px 18px;
+      padding: 11px 20px;
       font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       cursor: pointer;
       transition: transform 0.16s ease, opacity 0.16s ease;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.18);
     }
 
     #lf-widget-root .button:hover {
-      transform: translateY(-1px);
-      opacity: 0.92;
+      transform: translateY(-2px);
+      opacity: 0.96;
     }
 
     #lf-widget-root .button.primary {
-      background: linear-gradient(120deg, #b8462f, #c55f3f);
-      color: #fff;
+      background: linear-gradient(135deg, #c7ab6b, #7d6636 70%, #5a4823);
+      border-color: rgba(255, 244, 210, 0.12);
+      color: #13110b;
     }
 
     #lf-widget-root .button.secondary {
-      background: #ece2cd;
-      color: #2d2f31;
-      border: 1px solid #cfbe9f;
+      background: rgba(12, 22, 25, 0.88);
+      color: var(--ink);
+      border-color: rgba(205, 185, 132, 0.28);
     }
 
     #lf-widget-root .error {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1px solid #dc8a79;
-      background: #fbe2db;
-      color: #7a2516;
+      border: 1px solid rgba(153, 71, 65, 0.6);
+      background: rgba(72, 21, 19, 0.74);
+      color: #f1cbc5;
       display: none;
       font-size: 0.95rem;
     }
 
     #lf-widget-root .contact {
-      margin: 12px 0 0;
-      color: #5c5f60;
+      margin: 14px 0 0;
+      color: var(--muted);
       font-size: 0.84rem;
     }
 
     #lf-widget-root .contact a {
-      color: inherit;
+      color: #d8cfb6;
     }
 
     #lf-widget-root .results {
@@ -261,8 +321,8 @@
     #lf-widget-root .section h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
-      color: #112831;
-      letter-spacing: 0.02em;
+      color: #e8dec5;
+      letter-spacing: 0.04em;
     }
 
     #lf-widget-root .cards {
@@ -272,16 +332,19 @@
     }
 
     #lf-widget-root .card {
-      background: var(--panel-strong);
-      border: 1px solid #d4c5a9;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(180deg, rgba(16, 28, 31, 0.92), rgba(9, 18, 21, 0.96));
+      border: 1px solid rgba(205, 185, 132, 0.26);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+        0 14px 24px rgba(0, 0, 0, 0.16);
     }
 
     #lf-widget-root .card h4 {
       margin: 0 0 6px;
       font-size: 1.08rem;
+      color: #ece2c8;
     }
 
     #lf-widget-root .meta {
@@ -298,17 +361,17 @@
 
     #lf-widget-root .disclaimer {
       margin-top: 14px;
-      color: #5c5f60;
+      color: var(--muted);
       font-size: 0.84rem;
     }
 
     @media (max-width: 640px) {
       #lf-widget-root {
-        padding: 12px;
+        padding: 0;
       }
 
       #lf-widget-root .lfw-content {
-        padding: 14px;
+        padding: 6px 0 12px;
       }
 
       #lf-widget-root .question {
@@ -320,15 +383,9 @@
       }
     }
   </style>
-</head>
-<body style="margin: 0;">
+
   <div id="lf-widget-root">
   <div class="app" id="app">
-    <div class="lfw-header">
-      <h1>ラブクラフト作品診断</h1>
-      <p>12問＋任意1問で、あなた向けの作品を「本命・次点・冒険枠」で提案します。</p>
-    </div>
-
     <div class="lfw-content">
       <form id="quiz-form">
         <div id="question-list"></div>
@@ -1530,5 +1587,3 @@
     renderQuestions();
     attachEvents();
   </script>
-</body>
-</html>
