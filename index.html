@@ -1,5 +1,3 @@
-
-
 <!doctype html>
 <html lang="ja">
 <head>
@@ -8,26 +6,31 @@
   <title>ラブクラフト診断レコメンド</title>
   <style>
     #lf-widget-root {
-      --bg-1: #061419;
-      --bg-2: #10242d;
-      --panel: rgba(243, 234, 214, 0.92);
-      --panel-strong: #f0e8d6;
-      --ink: #1f2224;
-      --muted: #4d5456;
-      --accent: #b8462f;
-      --accent-2: #0d7f7b;
-      --line: #d7cbb2;
-      --shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      --bg-1: #010406;
+      --bg-2: #071318;
+      --panel: rgba(7, 16, 18, 0.94);
+      --panel-strong: rgba(12, 23, 26, 0.9);
+      --ink: #e2dbc8;
+      --muted: #98a39b;
+      --accent: #b59a62;
+      --accent-2: #6e948d;
+      --accent-3: #6b2b28;
+      --line: rgba(181, 154, 98, 0.34);
+      --line-strong: rgba(205, 185, 132, 0.62);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
       margin: 0;
       min-height: 100vh;
       font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at 15% 20%, rgba(13, 127, 123, 0.25), transparent 36%),
-        radial-gradient(circle at 85% 80%, rgba(184, 70, 47, 0.20), transparent 34%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+        radial-gradient(circle at 18% 16%, rgba(96, 143, 134, 0.18), transparent 24%),
+        radial-gradient(circle at 84% 12%, rgba(140, 112, 62, 0.16), transparent 22%),
+        radial-gradient(circle at 50% 115%, rgba(8, 60, 65, 0.52), transparent 36%),
+        linear-gradient(180deg, var(--bg-1) 0%, #041015 34%, var(--bg-2) 100%);
       line-height: 1.7;
       padding: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
     #lf-widget-root,
@@ -35,15 +38,64 @@
       box-sizing: border-box;
     }
 
+    #lf-widget-root::before,
+    #lf-widget-root::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    #lf-widget-root::before {
+      background:
+        repeating-linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0.02) 0,
+          rgba(255, 255, 255, 0.02) 1px,
+          transparent 1px,
+          transparent 9px
+        );
+      opacity: 0.18;
+    }
+
+    #lf-widget-root::after {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 34%);
+      opacity: 0.3;
+    }
+
     #lf-widget-root .app {
       max-width: 980px;
       margin: 0 auto;
-      background: var(--panel);
-      border: 1px solid rgba(239, 227, 201, 0.8);
-      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(7, 16, 19, 0.94), rgba(5, 12, 15, 0.98)),
+        radial-gradient(circle at top, rgba(110, 148, 141, 0.1), transparent 34%);
+      border: 1px solid var(--line-strong);
+      border-radius: 24px;
       box-shadow: var(--shadow);
       overflow: hidden;
       animation: rise 0.8s ease;
+      position: relative;
+      isolation: isolate;
+      backdrop-filter: blur(4px);
+    }
+
+    #lf-widget-root .app::before,
+    #lf-widget-root .app::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    #lf-widget-root .app::before {
+      inset: 14px;
+      border: 1px solid rgba(205, 185, 132, 0.16);
+      border-radius: 18px;
+    }
+
+    #lf-widget-root .app::after {
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 42%, rgba(0, 0, 0, 0.24) 100%);
     }
 
     @keyframes rise {
@@ -58,47 +110,83 @@
     }
 
     #lf-widget-root .lfw-header {
-      padding: 28px 24px 18px;
+      padding: 34px 30px 22px;
       background:
-        linear-gradient(120deg, rgba(6, 20, 25, 0.92), rgba(16, 36, 45, 0.92));
+        linear-gradient(180deg, rgba(15, 30, 35, 0.96), rgba(8, 17, 20, 0.92)),
+        radial-gradient(circle at 16% 0%, rgba(110, 148, 141, 0.18), transparent 28%);
       color: #f4ecda;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1px solid rgba(205, 185, 132, 0.24);
       position: static !important;
       inset: auto !important;
       transform: none !important;
       z-index: auto !important;
       display: block !important;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    #lf-widget-root .lfw-header::after {
+      content: "";
+      display: block;
+      height: 1px;
+      margin-top: 18px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(205, 185, 132, 0.78) 18%,
+        rgba(110, 148, 141, 0.4) 50%,
+        rgba(205, 185, 132, 0.78) 82%,
+        transparent
+      );
     }
 
     #lf-widget-root .lfw-header h1 {
       margin: 0 0 6px;
-      font-size: clamp(1.55rem, 1.05rem + 2vw, 2.2rem);
-      letter-spacing: 0.03em;
+      font-size: clamp(1.7rem, 1.1rem + 2.2vw, 2.45rem);
+      letter-spacing: 0.08em;
       font-weight: 700;
+      color: #ece3cb;
+      text-shadow: 0 0 18px rgba(110, 148, 141, 0.16);
     }
 
     #lf-widget-root .lfw-header p {
       margin: 0;
-      color: rgba(244, 236, 218, 0.92);
-      font-size: 0.98rem;
+      color: rgba(212, 208, 193, 0.82);
+      font-size: 0.96rem;
+      max-width: 44rem;
     }
 
     #lf-widget-root .lfw-content {
-      padding: 22px;
+      padding: 28px;
       position: static !important;
       margin-top: 0 !important;
       display: block !important;
     }
 
     #lf-widget-root .question {
-      padding: 16px;
+      padding: 18px 18px 16px;
       margin-bottom: 14px;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.55);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(16, 29, 32, 0.82), rgba(10, 19, 21, 0.94));
       transform: translateY(6px);
       opacity: 0;
       animation: staggerIn 0.55s ease forwards;
+      position: relative;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+        0 14px 26px rgba(0, 0, 0, 0.22);
+    }
+
+    #lf-widget-root .question::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 14px;
+      bottom: 14px;
+      width: 2px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(110, 148, 141, 0.8), rgba(181, 154, 98, 0.16));
     }
 
     #lf-widget-root .question:nth-child(1) { animation-delay: 0.03s; }
@@ -122,14 +210,16 @@
     }
 
     #lf-widget-root .q-title {
-      margin: 0 0 10px;
-      font-size: 1rem;
+      margin: 0 0 12px 12px;
+      font-size: 1.02rem;
       font-weight: 700;
+      color: #eadfbd;
+      letter-spacing: 0.04em;
     }
 
     #lf-widget-root .options {
       display: grid;
-      gap: 8px;
+      gap: 10px;
     }
 
     #lf-widget-root .option {
@@ -137,34 +227,61 @@
       align-items: flex-start;
       gap: 8px;
       font-size: 0.96rem;
+      padding: 11px 12px;
+      border: 1px solid rgba(181, 154, 98, 0.16);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.015);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+    }
+
+    #lf-widget-root .option:hover {
+      transform: translateX(2px);
+      border-color: rgba(205, 185, 132, 0.34);
+      background: rgba(110, 148, 141, 0.08);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+    }
+
+    #lf-widget-root .option:has(input:checked) {
+      border-color: rgba(205, 185, 132, 0.64);
+      background: linear-gradient(90deg, rgba(110, 148, 141, 0.2), rgba(181, 154, 98, 0.08));
+      box-shadow: 0 0 0 1px rgba(205, 185, 132, 0.14);
     }
 
     #lf-widget-root .option input {
-      margin-top: 0.25em;
-      accent-color: var(--accent-2);
+      margin-top: 0.35em;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    #lf-widget-root .option span {
+      display: block;
     }
 
     #lf-widget-root .optional {
       margin-top: 20px;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px dashed #b89f78;
-      background: rgba(243, 236, 223, 0.7);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px dashed rgba(205, 185, 132, 0.42);
+      background: linear-gradient(180deg, rgba(17, 29, 31, 0.74), rgba(10, 19, 21, 0.92));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
     #lf-widget-root .optional h3 {
       margin: 0 0 10px;
       font-size: 1rem;
+      color: #eadfbd;
     }
 
     #lf-widget-root textarea {
       width: 100%;
       min-height: 86px;
       padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #c4b08a;
+      border-radius: 10px;
+      border: 1px solid rgba(205, 185, 132, 0.34);
       font: inherit;
-      background: #fff;
+      background: rgba(4, 10, 12, 0.84);
+      color: var(--ink);
     }
 
     #lf-widget-root .select-wrap {
@@ -175,68 +292,112 @@
 
     #lf-widget-root select {
       max-width: 420px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #c4b08a;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(205, 185, 132, 0.34);
       font: inherit;
-      background: #fff;
+      background: rgba(4, 10, 12, 0.84);
+      color: var(--ink);
     }
 
     #lf-widget-root .actions {
-      margin-top: 18px;
+      margin-top: 20px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
 
     #lf-widget-root .button {
-      border: 0;
+      border: 1px solid transparent;
       border-radius: 999px;
-      padding: 10px 18px;
+      padding: 11px 20px;
       font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       cursor: pointer;
       transition: transform 0.16s ease, opacity 0.16s ease;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.18);
     }
 
     #lf-widget-root .button:hover {
-      transform: translateY(-1px);
-      opacity: 0.92;
+      transform: translateY(-2px);
+      opacity: 0.96;
     }
 
     #lf-widget-root .button.primary {
-      background: linear-gradient(120deg, #b8462f, #c55f3f);
-      color: #fff;
+      background: linear-gradient(135deg, #c7ab6b, #7d6636 70%, #5a4823);
+      border-color: rgba(255, 244, 210, 0.12);
+      color: #13110b;
     }
 
     #lf-widget-root .button.secondary {
-      background: #ece2cd;
-      color: #2d2f31;
-      border: 1px solid #cfbe9f;
+      background: rgba(12, 22, 25, 0.88);
+      color: var(--ink);
+      border-color: rgba(205, 185, 132, 0.28);
     }
 
     #lf-widget-root .error {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1px solid #dc8a79;
-      background: #fbe2db;
-      color: #7a2516;
+      border: 1px solid rgba(153, 71, 65, 0.6);
+      background: rgba(72, 21, 19, 0.74);
+      color: #f1cbc5;
       display: none;
       font-size: 0.95rem;
     }
 
     #lf-widget-root .contact {
-      margin: 12px 0 0;
-      color: #5c5f60;
+      margin: 14px 0 0;
+      color: var(--muted);
       font-size: 0.84rem;
     }
 
     #lf-widget-root .contact a {
-      color: inherit;
+      color: #d8cfb6;
+    }
+
+    #lf-widget-root .share-panel {
+      margin: 0 0 18px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(205, 185, 132, 0.3);
+      background: linear-gradient(180deg, rgba(18, 30, 34, 0.92), rgba(10, 18, 21, 0.95));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+    #lf-widget-root .share-summary {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: 0.93rem;
+    }
+
+    #lf-widget-root .share-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #lf-widget-root .button.share-x {
+      background: #111315;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    #lf-widget-root .button.share-line {
+      background: #06c755;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    #lf-widget-root .button.share-threads {
+      background: rgba(12, 22, 25, 0.88);
+      color: var(--ink);
+      border-color: rgba(205, 185, 132, 0.28);
     }
 
     #lf-widget-root .results {
@@ -263,8 +424,8 @@
     #lf-widget-root .section h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
-      color: #112831;
-      letter-spacing: 0.02em;
+      color: #e8dec5;
+      letter-spacing: 0.04em;
     }
 
     #lf-widget-root .cards {
@@ -274,16 +435,19 @@
     }
 
     #lf-widget-root .card {
-      background: var(--panel-strong);
-      border: 1px solid #d4c5a9;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(180deg, rgba(16, 28, 31, 0.92), rgba(9, 18, 21, 0.96));
+      border: 1px solid rgba(205, 185, 132, 0.26);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+        0 14px 24px rgba(0, 0, 0, 0.16);
     }
 
     #lf-widget-root .card h4 {
       margin: 0 0 6px;
       font-size: 1.08rem;
+      color: #ece2c8;
     }
 
     #lf-widget-root .meta {
@@ -300,7 +464,7 @@
 
     #lf-widget-root .disclaimer {
       margin-top: 14px;
-      color: #5c5f60;
+      color: var(--muted);
       font-size: 0.84rem;
     }
 
@@ -310,7 +474,7 @@
       }
 
       #lf-widget-root .lfw-content {
-        padding: 14px;
+        padding: 16px;
       }
 
       #lf-widget-root .question {
@@ -318,7 +482,7 @@
       }
 
       #lf-widget-root .lfw-header {
-        padding: 20px 16px 14px;
+        padding: 24px 18px 16px;
       }
     }
   </style>
@@ -519,6 +683,9 @@
       "中編": 0.66,
       "長編": 1.0
     };
+
+    const SHARE_QUERY_VERSION = "1";
+    const DEFAULT_DIFFICULTY = 3;
 
     const STAGE_TAGS = {
       1: ["海", "深淵", "港", "船"],
@@ -1174,6 +1341,110 @@
       return totalWeight ? sum / totalWeight : 0;
     }
 
+    function buildAnswerKey(answers) {
+      return Array.from({ length: 12 }, (_, index) => String(answers[`q${index + 1}`] || "")).join("");
+    }
+
+    function buildResultUrl(answers) {
+      const url = new URL(window.location.href);
+      url.hash = "";
+      url.search = "";
+      url.searchParams.set("v", SHARE_QUERY_VERSION);
+      url.searchParams.set("a", buildAnswerKey(answers));
+      url.searchParams.set("d", String(answers.q13Difficulty || DEFAULT_DIFFICULTY));
+      return url.toString();
+    }
+
+    function parseAnswersFromUrl() {
+      try {
+        const url = new URL(window.location.href);
+        const answerKey = url.searchParams.get("a");
+        if (!answerKey || !/^[1-5]{12}$/.test(answerKey)) return null;
+
+        const difficulty = url.searchParams.get("d") || String(DEFAULT_DIFFICULTY);
+        if (!/^[1-5]$/.test(difficulty)) return null;
+
+        const answers = {};
+        answerKey.split("").forEach((value, index) => {
+          answers[`q${index + 1}`] = Number(value);
+        });
+        answers.q13Difficulty = Number(difficulty);
+        return answers;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function applyAnswersToForm(answers) {
+      for (let i = 1; i <= 12; i += 1) {
+        const input = document.querySelector(`input[name="q${i}"][value="${answers[`q${i}`]}"]`);
+        if (input) input.checked = true;
+      }
+
+      const difficultySelect = document.getElementById("q13Difficulty");
+      if (difficultySelect) {
+        difficultySelect.value = String(answers.q13Difficulty || DEFAULT_DIFFICULTY);
+      }
+    }
+
+    function replaceUrlSilently(nextUrl) {
+      try {
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, "", nextUrl);
+        }
+      } catch (error) {
+        // Ignore environments that disallow history updates.
+      }
+    }
+
+    function clearResultUrl() {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.hash = "";
+      cleanUrl.search = "";
+      replaceUrlSilently(cleanUrl.toString());
+    }
+
+    function buildShareText(primaryPick) {
+      return `ラブクラフト作品診断の本命は「${primaryPick.work.title}」でした。あなたも試してみてください。`;
+    }
+
+    function buildShareLinks(primaryPick, shareUrl) {
+      const shareText = buildShareText(primaryPick);
+      return {
+        shareText,
+        x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+        line: `https://line.me/R/share?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
+        // Threads does not publish an official share intent doc, so this uses the current public web intent endpoint.
+        threads: `https://www.threads.net/intent/post?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`
+      };
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (error) {
+        // Fall through to the legacy copy path.
+      }
+
+      try {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "absolute";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(temp);
+        return copied;
+      } catch (error) {
+        return false;
+      }
+    }
+
     function collectAnswers() {
       const answers = {};
       for (let i = 1; i <= 12; i += 1) {
@@ -1423,12 +1694,15 @@
       `;
     }
 
-    function renderResults(scored, profile) {
+    function renderResults(scored, profile, answers, options = {}) {
       const resultsEl = document.getElementById("results");
       const topPicks = scored.slice(0, 3);
       const runnerUps = scored.slice(3, 5);
       const selected = new Set([...topPicks, ...runnerUps].map((item) => item.work.title));
       const adventure = pickAdventure(scored, selected, profile, topPicks[0]);
+      const shareUrl = buildResultUrl(answers);
+      const shareLinks = buildShareLinks(topPicks[0], shareUrl);
+      const shouldScroll = options.scroll !== false;
 
       const sections = [];
 
@@ -1458,11 +1732,37 @@
       resultsEl.innerHTML = `
         <h2>診断結果</h2>
         <p class="lead">入力した嗜好をもとに、スコア上位を抽出しました。</p>
+        <div class="share-panel">
+          <p class="share-summary">本命は「${topPicks[0].work.title}」でした。結果専用URL付きで共有できます。</p>
+          <div class="share-actions">
+            <a class="button share-x" href="${shareLinks.x}" target="_blank" rel="noopener noreferrer">Xで共有</a>
+            <a class="button share-line" href="${shareLinks.line}" target="_blank" rel="noopener noreferrer">LINEで共有</a>
+            <a class="button share-threads" href="${shareLinks.threads}" target="_blank" rel="noopener noreferrer">Threadsで共有</a>
+            <button type="button" class="button secondary" id="share-copy-btn">URLをコピー</button>
+          </div>
+        </div>
         ${sections.join("")}
         <p class="disclaimer">※外部リンクは販売ページです。実際の版・収録作品はリンク先でご確認ください。</p>
       `;
+
+      replaceUrlSilently(shareUrl);
       resultsEl.style.display = "block";
-      resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      const copyButton = document.getElementById("share-copy-btn");
+      if (copyButton) {
+        copyButton.addEventListener("click", async () => {
+          const copied = await copyText(shareUrl);
+          const originalLabel = "URLをコピー";
+          copyButton.textContent = copied ? "URLをコピーしました" : "コピーできませんでした";
+          window.setTimeout(() => {
+            copyButton.textContent = originalLabel;
+          }, 1800);
+        });
+      }
+
+      if (shouldScroll) {
+        resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function renderQuestions() {
@@ -1517,12 +1817,13 @@
 
         const profile = buildUserProfile(answers);
         const scored = evaluateWorks(profile);
-        renderResults(scored, profile);
+        renderResults(scored, profile, answers);
       });
 
       resetBtn.addEventListener("click", () => {
         form.reset();
         clearError();
+        clearResultUrl();
         const resultsEl = document.getElementById("results");
         resultsEl.style.display = "none";
         resultsEl.innerHTML = "";
@@ -1531,6 +1832,14 @@
 
     renderQuestions();
     attachEvents();
+
+    const answersFromUrl = parseAnswersFromUrl();
+    if (answersFromUrl) {
+      applyAnswersToForm(answersFromUrl);
+      const profileFromUrl = buildUserProfile(answersFromUrl);
+      const scoredFromUrl = evaluateWorks(profileFromUrl);
+      renderResults(scoredFromUrl, profileFromUrl, answersFromUrl, { scroll: false });
+    }
   </script>
 </body>
 </html>
