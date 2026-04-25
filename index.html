@@ -1347,21 +1347,23 @@
 
     function buildResultUrl(answers) {
       const url = new URL(window.location.href);
+      const hashParams = new URLSearchParams();
       url.hash = "";
-      url.search = "";
-      url.searchParams.set("v", SHARE_QUERY_VERSION);
-      url.searchParams.set("a", buildAnswerKey(answers));
-      url.searchParams.set("d", String(answers.q13Difficulty || DEFAULT_DIFFICULTY));
+      hashParams.set("v", SHARE_QUERY_VERSION);
+      hashParams.set("a", buildAnswerKey(answers));
+      hashParams.set("d", String(answers.q13Difficulty || DEFAULT_DIFFICULTY));
+      url.hash = hashParams.toString();
       return url.toString();
     }
 
     function parseAnswersFromUrl() {
       try {
         const url = new URL(window.location.href);
-        const answerKey = url.searchParams.get("a");
+        const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
+        const answerKey = hashParams.get("a");
         if (!answerKey || !/^[1-5]{12}$/.test(answerKey)) return null;
 
-        const difficulty = url.searchParams.get("d") || String(DEFAULT_DIFFICULTY);
+        const difficulty = hashParams.get("d") || String(DEFAULT_DIFFICULTY);
         if (!/^[1-5]$/.test(difficulty)) return null;
 
         const answers = {};
@@ -1400,7 +1402,6 @@
     function clearResultUrl() {
       const cleanUrl = new URL(window.location.href);
       cleanUrl.hash = "";
-      cleanUrl.search = "";
       replaceUrlSilently(cleanUrl.toString());
     }
 
